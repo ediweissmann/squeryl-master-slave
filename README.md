@@ -53,7 +53,7 @@ Tests
 
 Have a look at the tests [DefaultSpecTest.scala](http://github.com/ediweissmann/squeryl-master-slave/blob/master/src/test/scala/com/ediweissmann/squeryl/DefaultSpecTest.scala) for coverage and what is/isn't supported.
 
-There's a <code>create-schema-for-tests.sql</code> file that you need to execute in your local mysql "test" db before you can run the tests.
+There's a <code>create-schema-for-tests.sql</code> file that you need to execute in your local mysql <code>test</code> db before you can run the tests.
 
     mysql -uroot -ptest123 test < create-schema-for-tests.sql
 
