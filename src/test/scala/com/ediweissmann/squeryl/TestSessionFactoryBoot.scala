@@ -16,16 +16,9 @@ object TestSessionFactoryBoot extends SquerylMasterSlaveSessionFactoryBoot {
   def dataSourceFactory: MasterSlaveDataSourceFactory = new TestBoneCPMasterSlaveDataSourceFactory
 }
 
-/**
- * Helper that loads properties from multiple classpath files into one bundle
- */
-class MultipleSourcedProperties(paths:String*) extends Properties {
-  paths.foreach(path => load(getClass.getResourceAsStream(path.replaceFirst("classpath:", "/"))))
+object SoProperties extends Properties {
+  load(getClass.getResourceAsStream("/db.properties"))
 }
-
-object SoProperties extends MultipleSourcedProperties(
-  "classpath:db.properties",
-  "classpath:bonecp-default.properties")
 
 
 /**

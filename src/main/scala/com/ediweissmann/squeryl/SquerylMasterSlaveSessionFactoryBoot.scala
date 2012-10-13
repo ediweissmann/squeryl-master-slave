@@ -8,12 +8,8 @@ import org.squeryl.adapters.MySQLInnoDBAdapter
  * Configures the squeryl session factory using master/slave data sources
  * When context is marked as being a readOnly transaction, the session factory will create a session using the readOnly connection
  * Otherwise, the session factory will build a session using the master connection
- *
- * Safeguard of failure in case of writes to slave is dependant on having the slave data source mark it's connections as read-only
- * (and having a mysql slave user without write grants)
  */
 trait SquerylMasterSlaveSessionFactoryBoot {
-  import com.ediweissmann.squeryl.ReadOnlyTransactionSupport._
 
   def dataSourceFactory: MasterSlaveDataSourceFactory
 
@@ -28,7 +24,7 @@ trait SquerylMasterSlaveSessionFactoryBoot {
 
         // create concrete session factory
         SessionFactory.concreteFactory = Some(() => {
-          val conn = if (isReadOnlyTransaction) {
+          val conn = if (ReadOnlyTransactionSupport.isReadOnlyTransaction) {
             slaveDataSource.getConnection
           } else {
             masterDataSource.getConnection

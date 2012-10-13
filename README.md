@@ -12,6 +12,8 @@ First, setup your Squeryl SessionFactoryBoot
     object SessionFactoryBoot {
 
       def createSessionFactory {
+
+        // create master/slave datasources, we like BoneCP but you can use whatever you want
         val masterDS = BoneCPMasterSlaveDataSourceFactory.createMasterDataSource(SoProps)
         val slaveDS = BoneCPMasterSlaveDataSourceFactory.createSlaveDataSource(SoProps)
 
@@ -19,9 +21,9 @@ First, setup your Squeryl SessionFactoryBoot
       }
     }
 
-    object SoProps extends MultipleSourcedProperties(
-      "/db.properties",
-      "/bonecp-default.properties")
+    object SoProperties extends Properties {
+      load(getClass.getResourceAsStream("/db.properties"))
+    }
 
 Then create the session factory
 

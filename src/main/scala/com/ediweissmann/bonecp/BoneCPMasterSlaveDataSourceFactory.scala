@@ -11,27 +11,11 @@ import com.ediweissmann.squeryl.MasterSlaveDataSourceFactory
  */
 class BoneCPMasterSlaveDataSourceFactory(val soProps:Properties) extends MasterSlaveDataSourceFactory {
 
-  def applyCommonBoneCPProps(config: BoneCPConfig, soProps: Properties) {
-    config.setMaxConnectionsPerPartition(soProps.getProperty("bonecp.maxConnectionsPerPartition").toInt)
-    config.setMinConnectionsPerPartition(soProps.getProperty("bonecp.minConnectionsPerPartition").toInt)
-    config.setPartitionCount(soProps.getProperty("bonecp.partitions").toInt)
-    config.setAcquireIncrement(soProps.getProperty("bonecp.acquireIncrement").toInt)
-    config.setIdleMaxAge(soProps.getProperty("bonecp.idleMaxAge").toLong, TimeUnit.MINUTES)
-    config.setIdleConnectionTestPeriodInSeconds(soProps.getProperty("bonecp.idleConnectionTestPeriod").toLong)
-    config.setConnectionTestStatement(soProps.getProperty("bonecp.connectionTestStatement"))
-    config.setInitSQL(soProps.getProperty("bonecp.initSql"))
-    config.setMaxConnectionAgeInSeconds(soProps.getProperty("bonecp.maxConnectionAgeInSeconds").toLong)
-    config.setStatementsCacheSize(soProps.getProperty("bonecp.statementsCacheSize").toInt)
-    config.setReleaseHelperThreads(soProps.getProperty("bonecp.releaseHelperThreads").toInt)
-    config.setCloseConnectionWatch(soProps.getProperty("bonecp.closeConnectionWatch").toBoolean)
-    config.setCloseConnectionWatchTimeoutInMs(soProps.getProperty("bonecp.closeConnectionWatchTimeoutInMs").toLong)
-  }
-
   def masterConfig(): BoneCPConfig = {
     val masterConfig = new BoneCPConfig()
-    masterConfig.setUsername(soProps.getProperty("nl.db.username"))
-    masterConfig.setPassword(soProps.getProperty("nl.db.password"))
-    masterConfig.setJdbcUrl(soProps.getProperty("nl.db.url"))
+    masterConfig.setUsername(soProps.getProperty("db.master.username"))
+    masterConfig.setPassword(soProps.getProperty("db.master.password"))
+    masterConfig.setJdbcUrl(soProps.getProperty("db.master.url"))
 
     applyCommonBoneCPProps(masterConfig, soProps)
     masterConfig
@@ -39,14 +23,20 @@ class BoneCPMasterSlaveDataSourceFactory(val soProps:Properties) extends MasterS
 
   def slaveConfig(): BoneCPConfig = {
     val slaveConfig = new BoneCPConfig()
-    slaveConfig.setUsername(soProps.getProperty("nl.db.slave.username"))
-    slaveConfig.setPassword(soProps.getProperty("nl.db.slave.password"))
-    slaveConfig.setJdbcUrl(soProps.getProperty("nl.db.slave.url"))
+    slaveConfig.setUsername(soProps.getProperty("db.slave.username"))
+    slaveConfig.setPassword(soProps.getProperty("db.slave.password"))
+    slaveConfig.setJdbcUrl(soProps.getProperty("db.slave.url"))
 
     slaveConfig.setDefaultReadOnly(true)
 
     applyCommonBoneCPProps(slaveConfig, soProps)
     slaveConfig
+  }
+
+  def applyCommonBoneCPProps(config: BoneCPConfig, soProps: Properties) {
+    config.setMaxConnectionsPerPartition(soProps.getProperty("bonecp.maxConnectionsPerPartition", "5").toInt)
+    config.setMinConnectionsPerPartition(soProps.getProperty("bonecp.minConnectionsPerPartition", "5").toInt)
+    config.setPartitionCount(soProps.getProperty("bonecp.partitions", "1").toInt)
   }
 
   override def createMasterDataSource(): DataSource = {
